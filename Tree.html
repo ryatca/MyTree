@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>MyTaskTree</title>
+	<link rel="stylesheet" href="lib/jkanban.min.css">
+	<link rel="stylesheet" href="lib/bootstrap.min.css">
+</head>
+<body>
+	<!--ボードの表示-->
+	<div class="container-fluid">
+		<div class="row">
+				<div class="col-lg-12" id="myTree"></div>
+		</div>
+	</div>
+
+
+	<script src="lib/jkanban.min.js" ></script>
+	<script src="lib/bootstrap.min.js"></script>
+	<script src="lib/jquery-3.2.1.slim.min.js"></script>
+	<script src="lib/popper.min.js"></script>
+	<script>
+
+		const defaultBoards = [
+			//未着手ボード
+			{
+				"id":"defaultBoards-1",
+				"title":"未着手",
+				"dragTo":['defaultBoards-2'],
+				"item":[
+						{"title":"test"},
+						{"title":""}
+				]
+			},
+			//作業中ボード
+			{
+				"id":"defaultBoards-2",
+				"title":"作業中",
+				"item":[
+					{"title":"test"},
+					{"title":""}
+				]
+			},
+			//完了ボード
+			{
+				"id":"defaultBoards-3",
+				"title":"完了",
+				"item":[
+					{"title":"test"},
+					{"title":""}
+				]
+			}
+		];
+
+		function addItem(id){
+			console.log("true")
+			const formItem = document.createElement('form');
+
+			formItem.innerHTML = '<input type="text">';
+			kanban.addForm(id, formItem);
+
+			formItem.addEventListener('submit',(e) => {
+				e.preventDefault();
+
+				kanban.addElement(id,{"title": e.target[0].value});
+
+				formItem.parentNode.removeChild(formItem);
+			});
+		}
+
+		function removeCheck(elem){
+			let result = confirm("本当に削除してもよろしいですか？");
+			if(result){
+				kanban.removeElement(elem);
+			}
+		}
+
+
+		const kanban = new jKanban({
+
+			element: '#myTree', //管理するボードのid
+
+			gutter: '15px', //ボード同士の感覚
+
+			// widthBoard: '250px', //ボードのサイズ
+
+			boards: defaultBoards, //初期状態のボードの中身をJSONで指定
+
+			addItemButton:true,
+
+			buttonClick:(elem,id) => addItem(id),
+
+			click: (elem) => removeCheck(elem)
+
+		});
+
+
+		/* DOM操作 */
+		$('.kanban-container').removeAttr('style');
+		$('.kanban-container').addClass('row');
+		$('.kanban-container>div').css('width', '');
+		$('.kanban-container>div').css('margin-left', '');
+		$('.kanban-container>div').css('margin-right', '');
+		$('.kanban-container>div').addClass('col-lg-4 mb-4 px-2');
+		$('.kanban-container>div:eq(0)').addClass('bg-info');
+		$('.kanban-container>div:eq(1)').addClass('bg-warning');
+		$('.kanban-container>div:eq(2)').addClass('bg-success');
+	</script>
+
+</body>
+</html>
